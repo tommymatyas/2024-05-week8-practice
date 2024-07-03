@@ -1,0 +1,12 @@
+body {
+  background-color: aqua;
+}
+
+h1 {
+  font-size: unset;
+  font-weight: unset;
+}
+
+div#main {
+  border: 2px solid black;
+}
