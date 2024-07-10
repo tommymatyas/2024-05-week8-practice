@@ -1,6 +1,6 @@
 let charactersData = [];
 
-const characterComponent = (name, height, mass, index) => {
+const characterComponent = (name, height, mass, index, hairColor, eyeColor) => {
   return `
   <div class="character">
   <h2> Character ${index + 1} </h2>
@@ -8,6 +8,12 @@ const characterComponent = (name, height, mass, index) => {
         <p class="name">${name}</p>
         <p class="height">${height} cm</p>
         <p class="mass">${mass} kg</p>
+
+        <button class="more">Show more</button>
+        <div class="more-data">
+        <p class="hair-color">${hairColor}</p>
+        <p class="eye-color">${eyeColor}</p>
+        </div>
         </div>`;
 };
 
@@ -19,7 +25,9 @@ ${charactersData
       characterData.name,
       characterData.height,
       characterData.mass,
-      index
+      index,
+      characterData.hair_color,
+      characterData.eye_color
     )
   )
   .join(" ")}
@@ -37,6 +45,17 @@ const makeDomFromData = (data, rootElement) => {
   const buttonHtml = `<button class="fetch">Load more</button>`;
 
   rootElement.insertAdjacentHTML("beforeend", charactersHtml);
+  const moreButtonElements = document.querySelectorAll("button.more");
+  moreButtonElements.forEach((moreButtonElement) => {
+    moreButtonElement.addEventListener("click", () => {
+      moreButtonElement.classList.toggle("clicked");
+
+      moreButtonElement.innerText === "Show more"
+        ? (moreButtonElement.innerText = "Show less")
+        : (moreButtonElement.innerText = "Show more");
+    });
+  });
+
   if (data.next) {
     rootElement.insertAdjacentHTML("beforeend", buttonHtml);
 
@@ -60,6 +79,78 @@ const init = async () => {
 
 init();
 
+//chatGPT
+/* 
+let charactersData = [];
+
+const characterComponent = (name, height, mass, index) => {
+  return `
+  <div class="character">
+    <h2> Character ${index + 1} </h2>
+    <h3> Data: </h3>
+    <p class="name">${name}</p>
+    <p class="height">${height} cm</p>
+    <p class="mass">${mass} kg</p>
+  </div>`;
+};
+
+const charactersComponent = (charactersData) => `
+<div class="characters">
+  ${charactersData
+    .map((characterData, index) =>
+      characterComponent(
+        characterData.name,
+        characterData.height,
+        characterData.mass,
+        index
+      )
+    )
+    .join(" ")}
+</div>`;
+
+const fetchData = async (url) => {
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+};
+
+const makeDomFromData = (data, rootElement) => {
+  charactersData.push(...data.results);
+  const charactersHtml = charactersComponent(charactersData);
+  rootElement.innerHTML = charactersHtml;
+
+  if (data.next) {
+    observeElementForInfiniteScroll(data.next, rootElement);
+  }
+};
+
+const observeElementForInfiniteScroll = (nextUrl, rootElement) => {
+  const sentinel = document.createElement("div");
+  sentinel.className = "sentinel";
+  rootElement.appendChild(sentinel);
+
+  const observer = new IntersectionObserver(
+    async (entries) => {
+      if (entries[0].isIntersecting) {
+        observer.disconnect();
+        const newData = await fetchData(nextUrl);
+        makeDomFromData(newData, rootElement);
+      }
+    },
+    { rootMargin: "200px" }
+  );
+
+  observer.observe(sentinel);
+};
+
+const init = async () => {
+  const data = await fetchData("https://swapi.dev/api/people/");
+  const rootElement = document.querySelector("#root");
+  makeDomFromData(data, rootElement);
+};
+
+init();
+ */
 /* 
 async function fetchData() {
   const fetchResult = await fetch("https://swapi.dev/api/people/");
